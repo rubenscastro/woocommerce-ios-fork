@@ -75,7 +75,12 @@ struct POSSecuritySettingsView: View {
                 POSManagerOverrideView(handler: approval, request: request)
                     .posManagerOverrideModalSizing()
             case .editor(let flow):
-                POSPINSetupFlowView(flow: flow, controller: controller, close: closeEditor)
+                POSPINSetupFlowView(flow: flow, controller: controller, close: closeEditor) {
+                    closeEditor()
+                    presentation.present(.guidedAccessGuide)
+                }
+            case .guidedAccessGuide:
+                POSGuidedAccessGuideView(close: presentation.cancel)
             }
         }
         .accessibilityIdentifier("pos-security-settings")
@@ -89,6 +94,7 @@ struct POSSecuritySettingsView: View {
             case .approval:
                 presentation.cancel()
                 dismissApproval()
+            case .guidedAccessGuide: presentation.cancel()
             case nil: break
             }
         })
@@ -152,8 +158,7 @@ struct POSSecuritySettingsView: View {
                         .background(Color.posDefault)
                         .clipShape(RoundedRectangle(cornerRadius: POSCornerRadiusStyle.small.value))
                 } else {
-                    // WOOMOB-4595 connects the Guided Access guide.
-                    Button(Localization.setUpGuidedAccessButton) {}
+                    Button(Localization.setUpGuidedAccessButton) { presentation.present(.guidedAccessGuide) }
                         .buttonStyle(POSInfoCardButtonStyle(size: .compact, variant: .primary))
                         .accessibilityLabel(Localization.setUpGuidedAccess)
                 }

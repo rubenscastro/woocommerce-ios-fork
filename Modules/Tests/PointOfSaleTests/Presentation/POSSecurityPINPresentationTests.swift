@@ -23,6 +23,29 @@ struct POSSecurityPINPresentationTests {
         #expect(style == .managerApproval)
     }
 
+    @Test func test_guidedAccessGuide_when_presented_then_shows_the_guide_title_on_phone() {
+        // When
+        let style = POSSecurityPINPresentation.Destination.guidedAccessGuide.compactStyle
+
+        // Then
+        #expect(style == .fullScreen(title: POSGuidedAccessGuideView.Localization.title))
+    }
+
+    @Test func test_guidedAccessGuide_when_presented_and_cancelled_then_leaves_settings_enabled() {
+        // Given
+        let sut = POSSecurityPINPresentation()
+        sut.present(.guidedAccessGuide)
+        #expect(sut.destination == .guidedAccessGuide)
+        #expect(!sut.isTransitioning)
+
+        // When
+        sut.cancel()
+
+        // Then
+        #expect(sut.destination == nil)
+        #expect(!sut.isTransitioning)
+    }
+
     @Test(arguments: [false, true])
     func test_handoff_when_waiting_for_result_or_dismissal_then_blocks_settings(dismissesFirst: Bool) {
         // Given
